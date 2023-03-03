@@ -10,9 +10,9 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,  // create(), findUnique()
-    private jwt: JwtService,        // signAsync()
-    private config: ConfigService,  // JWT_SECRET
+    private prisma: PrismaService, // create(), findUnique()
+    private jwt: JwtService, // signAsync()
+    private config: ConfigService, // JWT_SECRET
   ) {}
 
   async signup(dto: AuthDto) {
@@ -30,14 +30,13 @@ export class AuthService {
 
       // Strip secret fields before returning
       delete user.hash;
-      
+
       // Return the saved user
-      return user;
-    }
-    catch (error) {
+      return this.signToken(user.id, user.email);
+    } catch (error) {
       // Check if the error comes from Prisma
       if (error instanceof PrismaClientKnownRequestError) {
-          // Prisma error code for duplicate fields
+        // Prisma error code for duplicate fields
         if (error.code === 'P2002') {
           throw new ForbiddenException('Credentials taken, biatch');
         }
@@ -46,7 +45,7 @@ export class AuthService {
       // Otherwise throw it back. Hot potato, baby.
       throw error;
     }
-}
+  }
 
   async signin(dto: AuthDto) {
     // Find the user by email
@@ -55,33 +54,41 @@ export class AuthService {
         email: dto.email,
       },
     });
-    
+
     // If user does not exist, throw exception
-    if (!user) 
-        throw new ForbiddenException('Credentials incorrect');
-        
+    if (!user)
+      throw new ForbiddenException(
+        'Credentials incorrect, user not found',
+      );
+
     // Compare password
     const passMatches = await argon.verify(user.hash, dto.password);
-        
+
     // If password incorrect, throw exception
     if (!passMatches)
-        throw new ForbiddenException('Credentials incorrect');
-        
-    // Send back the user without unwanted field
-    delete user.hash; // Will strip it from the user object
-    return user;
+      throw new ForbiddenException('Credentials incorrect, bad pass');
+
+    // Return the signed token for the user
+    return this.signToken(user.id, user.email);
   }
 
-  async signToken(userId: number, email: string) {
+  async signToken(
+    userId: string,
+    email: string,
+  ): Promise<{ access_token: string }> {
     const payload = {
-      sub: userId, // identifies the principal that is the subject of the JWT
+      id: userId, // identifies the principal that is the subject of the JWT
       email,
-    }
+    };
     const secret = this.config.get('JWT_SECRET');
 
-    return this.jwt.signAsync(payload, {
+    const token = await this.jwt.signAsync(payload, {
       expiresIn: '15m',
       secret: secret,
-    })
+    });
+
+    return {
+      access_token: token, // creates a string object
+    };
   }
 }
