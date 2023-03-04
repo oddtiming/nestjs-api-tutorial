@@ -1,12 +1,26 @@
-import { Controller, Get, Req, UseGuards } from "@nestjs/common";
-import { Request } from "express";
-import { JwtGuard } from "src/auth/guard";
+import { Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { User } from '@prisma/client';
+import { GetUser } from '../auth/decorator/get-user.decorator';
+import { JwtGuard } from '../auth/guard';
 
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
-    @UseGuards(JwtGuard)
-    @Get('me')
-    getMe(@Req() req: Request) {
-        return req.user;
-    }
+    /**
+     *    User Profile page
+     * @param user User type from the prisma schema.
+     *    @GetUser() custom decorator exposes the user from the request
+    */
+  @Get('me')
+  getMe(@GetUser() user: User) {
+    return user;
+  }
+
+  /**
+   *    Edit user parameters
+   * @param user User type from the prisma schema.
+   *    @GetUser() custom decorator exposes the user from the request
+   */
+  @Patch('edit')
+  editUser(@GetUser() user: User) {}
 }

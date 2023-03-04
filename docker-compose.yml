@@ -9,6 +9,14 @@ services:
       - ./.env
     networks:
       - api
+  test-db:
+    image: postgres:13
+    ports:
+      - 5435:5432
+    env_file:
+      - ./.env
+    networks:
+      - api
 
 networks:
   api:
