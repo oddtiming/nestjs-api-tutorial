@@ -3,13 +3,43 @@ import {
   ExecutionContext,
 } from '@nestjs/common';
 
+/**
+ * @param field? : optional User field to query
+ * @GetUser Decorator. 
+ * @return User | any
+ * 
+ * Returns a User object (as defined in prisma schema)
+ * from an HTTP connection if no field is specified
+ * If a field is specified, return its contents.
+ * 
+ */
 export const GetUser = createParamDecorator(
-  (data: string | undefined, ctx: ExecutionContext) => {
+  (field: string | undefined, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest(); // Exposes Express Request
-    // const request = ctx.switchToWs().getRequest();
-    if (data) {
-      return request.user[data];
+    if (field) {
+      return request.user[field];
     }
     return request.user;
+  },
+  );
+  
+/**
+ * @param field? : optional User field to query
+ * @GetUserWs Decorator. 
+ * @return User | any
+ * 
+ * Returns a User object (as defined in prisma schema)
+ * from a WebSocket connection if no field is specified
+ * If a field is specified, return its contents.
+ * 
+ */
+export const GetUserWs = createParamDecorator(
+  (field: string | undefined, ctx: ExecutionContext) => {
+    const user = ctx.switchToWs().getClient();
+    // Can be uncommented to switch between 
+    if (field) {
+      return user[field];
+    }
+    return user;
   },
 );
