@@ -14,4 +14,19 @@ export class PrismaService extends PrismaClient {
             },
         });
     }
+
+    /**
+     * To be executed in testing, or to fully cleanup the db.
+     * If you're not sure, probs best not to touch it.
+     */
+    cleanDb() {
+        /**
+         * Transaction delegates proper deletion order to prisma.
+         * Accepts an array of operations.
+         */
+        return this.$transaction([
+            this.bookmark.deleteMany(),
+            this.user.deleteMany(),
+        ])
+    }
 }

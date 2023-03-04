@@ -36,7 +36,9 @@ model Bookmark {
   link        String
 
   userId String
-  user   User   @relation(fields: [userId], references: [id]) // Creates a dependency
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // We add  `onDelete: Cascade`, which ensures the child 
+  // data gets deleted when the parent data is deleted
 
   @@map("bookmarks")
 }
