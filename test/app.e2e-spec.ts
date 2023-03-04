@@ -9,6 +9,7 @@ import { setBaseUrl } from 'pactum/src/exports/request';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { EditUserDto } from '../src/user/dto';
 
 // describe comes from jest
 describe('App e2e', () => {
@@ -19,10 +20,9 @@ describe('App e2e', () => {
 
   /**
    * To test WebSockets, from https://github.com/nestjs/docs.nestjs.com/issues/97
-   * 
+   *
    * See also:
    * - https://stackoverflow.com/questions/70395110/nestjs-websocket-how-to-test-and-debug-socket-hang-up
-   * - 
    */
   // import * as WebSocket from 'ws'
   // beforeAll(async () => {
@@ -192,7 +192,7 @@ describe('App e2e', () => {
           .withBody(dto)
           .expectStatus(HttpStatus.OK)
           .stores('userToken', 'access_token');
-        });
+      });
     });
   });
 
@@ -205,12 +205,28 @@ describe('App e2e', () => {
           .withHeaders({
             Authorization: 'Bearer $S{userToken}',
           })
-          .expectStatus(HttpStatus.OK)
+          .expectStatus(HttpStatus.OK);
       });
     });
 
     describe('Edit user', () => {
-      it.todo('should be able to edit user');
+      it('should edit current user', () => {
+        const dto: EditUserDto = {
+          firstName: 'Ismaboo',
+          email: 'xXxDarkAngel69xXx@caramail.com',
+        };
+
+        return pactum
+          .spec()
+          .patch('/users/edit')
+          .withHeaders({
+            Authorization: 'Bearer $S{userToken}',
+          })
+          .withBody(dto)
+          .expectStatus(HttpStatus.OK)
+          .expectBodyContains(dto.firstName)
+          .expectBodyContains(dto.email);``
+      });
     });
   });
 

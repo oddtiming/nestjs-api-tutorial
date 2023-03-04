@@ -18,9 +18,9 @@ export class AuthController {
   signup( @Body() dto: AuthDto ) {
     // The barren export pattern in ./dto/index.ts allows automatic exposition
     
-    console.log({
-        dto,
-    }); // Creates an object and assigns it
+    // console.log({
+    //     dto,
+    // }); // Creates an object and assigns it
 
     return this.authService.signup(dto);
   }

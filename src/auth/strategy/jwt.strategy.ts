@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
+import { User } from '@prisma/client';
 
 // This class is also a provider
 @Injectable()
@@ -21,12 +22,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
    * @param payload Contents of the JTW
    * @returns Will be appended the payload to the user object of the request object
    */
-  async validate(payload: {id: string, email: string}) {
+  async validate(payload: {id: string, email: string}): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: {
         id: payload.id,
       }
     })
+
+    // TODO: add business logic to throw unifies HttpStatus in case of error
+
     delete user.hash; // Remove sensitive data before returning
     return user;
   }
