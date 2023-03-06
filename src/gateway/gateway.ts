@@ -7,7 +7,11 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: ['http://localhost:3000'] // :3000 is location of the React App
+  }
+})
 export class MyGateway implements OnModuleInit {
   @WebSocketServer() // Gives us the instance of the WebSocket server
   server: Server;
