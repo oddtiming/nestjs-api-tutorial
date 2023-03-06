@@ -8,6 +8,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
+import { GatewayModule } from './gateway/gateway.module';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { UserController } from './user/user.controller';
       UserModule,
       BookmarkModule,
       PrismaModule,
+      GatewayModule,
+      SocketModule
     ],
   controllers: [UserController],
   providers: [UserService],

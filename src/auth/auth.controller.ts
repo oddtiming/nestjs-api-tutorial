@@ -5,10 +5,12 @@ import {
   HttpStatus,
   Post,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
 
 @Controller('auth')
+@ApiTags('auth')
 export class AuthController {
   // Here, private means that authService is a member attribute
   constructor(private authService: AuthService) {}
