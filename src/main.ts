@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as session from 'express-session';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -18,6 +19,10 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  app.use(
+    session({ resave: false, saveUninitialized: false, secret: 'secret' }),
+  );
 
   await app.listen(3333);
 }

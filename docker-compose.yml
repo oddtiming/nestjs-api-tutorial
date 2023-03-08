@@ -17,6 +17,6 @@ services:
       - ./.env
     networks:
       - api
-
+  
 networks:
   api:

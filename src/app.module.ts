@@ -10,13 +10,18 @@ import { UserService } from './user/user.service';
 import { UserController } from './user/user.controller';
 import { GatewayModule } from './gateway/gateway.module';
 import { SocketModule } from './socket/socket.module';
+import { configValidationSchema } from './config.schema';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
       ConfigModule.forRoot({
+        envFilePath: '../.env',
+        validationSchema: configValidationSchema,
         isGlobal: true, // Expose the module globally
       }), // Loads env vars. Uses dotenv library under the hood
       AuthModule,
+      HttpModule,
       UserModule,
       BookmarkModule,
       PrismaModule,

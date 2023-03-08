@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './strategy';
+import { SessionSerializer } from './session.serializer';
+import { FortyTwoStrategy, JwtStrategy } from './strategy';
 
 @Module({
     imports: [JwtModule.register({})],
@@ -17,6 +18,6 @@ import { JwtStrategy } from './strategy';
      *  Instead we customize the token in auth.service
      */
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy],
+    providers: [AuthService, JwtStrategy, FortyTwoStrategy, SessionSerializer],
 })
 export class AuthModule {}

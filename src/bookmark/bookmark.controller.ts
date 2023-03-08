@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '../auth/decorator';
-import { JwtGuard } from '../auth/guard';
+import { JwtGuard } from '../auth/guards';
 import { BookmarkService } from './bookmark.service';
 import { CreateBookmarkDto, EditBookmarkDto } from './dto';
 
