@@ -29,7 +29,7 @@ export class AuthController {
     console.log({
         dto,
     }); // Creates an object and assigns it
-
+    
     return this.authService.signup(dto);
   }
 

@@ -6,6 +6,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '.prisma/client';
 import { ConfigService } from '@nestjs/config';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class AuthService {
@@ -15,11 +16,16 @@ export class AuthService {
     private config: ConfigService, // JWT_SECRET
   ) {}
 
-  async signup(dto: AuthDto) {
+  async signup(
+    dto: AuthDto,
+  ): Promise<
+    | { access_token: string }
+    | { errorCode: number; errorMessage: string }
+  > {
     try {
       // Generate the password hash
       const hash = await argon.hash(dto.password);
-      
+
       // Save the new user in the db
       const user = await this.prisma.user.create({
         data: {
@@ -27,9 +33,6 @@ export class AuthService {
           hash,
         },
       });
-
-      // Strip secret fields before returning
-      delete user.hash;
 
       // Return the saved user
       return this.signToken(user.id, user.email);
@@ -43,8 +46,16 @@ export class AuthService {
       }
 
       // Otherwise throw it back. Hot potato, baby.
-      throw error;
+      // throw error;
+      return { errorCode: 1, errorMessage: 'Error' };
     }
+  }
+
+  async callToSignup(dto: AuthDto) {
+    const ret = await this.signup(dto);
+    if (ret) throw new WsException(' invalid credentials');
+
+    return dto;
   }
 
   async signin(dto: AuthDto) {

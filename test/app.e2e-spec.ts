@@ -94,6 +94,8 @@ describe('App e2e', () => {
     };
 
     describe('Signup', () => {
+      it.todo('should throw 400 if email empty');
+
       it('should throw 400 if email empty', () => {
         return pactum
           .spec()

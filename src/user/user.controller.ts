@@ -25,6 +25,7 @@ export class UserController {
    *    @GetUser() custom decorator exposes the user from the request
    */
   @Get('me')
+  @UseGuards(JwtGuard)
   getMe(@GetUser() user: User) {
     return user;
   }

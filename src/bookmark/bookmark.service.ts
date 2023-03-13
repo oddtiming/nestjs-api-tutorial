@@ -78,7 +78,7 @@ export class BookmarkService {
         id: bookmarkId,
       },
     });
-    
+
     return;
   }
 }

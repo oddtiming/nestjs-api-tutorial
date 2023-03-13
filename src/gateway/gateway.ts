@@ -1,4 +1,9 @@
-import { OnModuleInit } from '@nestjs/common';
+import {
+  CacheInterceptor,
+  Logger,
+  OnModuleInit,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -7,10 +12,12 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { AuthDto } from '../auth/dto';
 
 @WebSocketGateway({
   cors: {
     origin: ['http://localhost:3000'], // :3000 is location of the React App
+    // origin: ['*'],
   },
 })
 export class MyGateway implements OnModuleInit {
@@ -26,19 +33,24 @@ export class MyGateway implements OnModuleInit {
   }
 
   // Server will subscribe to a certain emitted message from the client
+  @UseInterceptors(CacheInterceptor)
   @SubscribeMessage('newMessage')
   onNewMessage(
     @MessageBody() body: any,
     @ConnectedSocket() client: Socket,
   ) {
+    const dto = new AuthDto(body);
     console.log("MyGateway: 'newMessage' subscription triggered: ");
-    console.log('Message body: ', body);
     console.log('Message body: ', body);
 
     console.log("\nMyGateWay: Emitting 'onMessage' event...");
     console.log(
       `\nMyGateway: Client ${client.id} (${client.handshake.address}) emitted 'newMessage' event`,
     );
+    const toJSON = JSON.parse(JSON.stringify(body));
+    const email = toJSON.email;
+    Logger.log('email: ' + email);
+    Logger.log('toJSON: ' + toJSON);
     this.server.emit('onMessage', {
       msg: 'new message',
       clientId: client.id,
